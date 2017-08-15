@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Calendrier en JavaScript</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="author" lang="fr" content="Mickael Barre" />
+		<meta name="description" content="Calendrier" />
+
+        <link rel="stylesheet" href="style.css" type="text/css" />
+        
+        <script>
+       
+        function event() {
+
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+	    if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) {
+		    var listeEvenements = xhr.responseText;
+		    liste=parse(listeEvenements);
+            ajouterDansHtml(liste);
+            //  document.getElementById('view').innerHTML=liste;
+        }
+        };
+        xhr.open('GET', 'cal.csv', true);
+        xhr.send(null);
+        }
+
+        /* fonction qui passe au mois suivant lorsque l'on clique sur le bouton */
+      function MoisSuivant() {
+            var year  = document.Calendrier.Annee.value;
+            var month = document.Calendrier.Mois.value;
+            if (month == 11) {
+                month = 0;
+                year++;
+                document.Calendrier.Annee.value = year;
+            }
+            else {
+                month++;
+            }
+            document.Calendrier.Mois.value = month;
+            Mois();
+        }   
+
+     /* fonction qui passe au mois precedent lorsque l'on clique sur le bouton */
+      function MoisPrecedent() {
+            var year  = document.Calendrier.Annee.value;
+            var month = document.Calendrier.Mois.value;
+            if (month == 0) {
+                month = 11;
+                year--;
+                document.Calendrier.Annee.value = year;
+            }
+            else {
+                month--;
+            }
+            document.Calendrier.Mois.value = month;
+            Mois();
+        }  
+
+
+    /* fonction qui passe a l'annee precedente lorsque l'on clique sur le bouton */
+        function AnneePrecedente() {
+            var mode = document.Calendrier.Modes.value;
+            var year  = document.Calendrier.Annee.value;
+            year--;
+            document.Calendrier.Annee.value = year;
+            if(mode == 1) 
+                Mois();
+            else
+                Annee()
+
+        } 
+
+     /* fonction qui passe a l'annee suivante lorsque l'on clique sur le bouton */   
+        function AnneeSuivante() {
+            var mode = document.Calendrier.Modes.value;
+            var year  = document.Calendrier.Annee.value;
+            year++;
+            document.Calendrier.Annee.value = year;
+            if(mode == 1) 
+                Mois();
+            else
+                Annee()
+
+        } 
+
+
+
+        /* fonction pour separer en tableau la liste d'evenement */
+        function parse(str)
+        {
+	        liste=str.split("\r");
+	        for (i=0;i<liste.length;i++)
+    	        liste[i]=liste[i].split(',');
+	        return liste;
+        }
+
+        /* fonction pour ajouter les evenements au calendrier en fonction de l'id du td du calendrier */
+        function ajouterDansHtml(liste)
+        {
+            var i = 0;
+	        //liste représente le tableau à deux dimensions des évènements
+            for (num=liste.length-1;num>=0;num--){
+            if (document.getElementById('_'+liste[num][0]))
+                document.getElementById('_'+liste[num][0]).innerHTML+="<div id='insert'>" +liste[num][1]+"</div>";
+            if (document.getElementById(liste[num][0]+liste[num][2])) {
+                  if(liste[num][3] != "") {
+                       fin = liste[num][3].split(":");
+                       deb = liste[num][2].split(":");
+                       while (deb[0] != fin[0]) { 
+                         document.getElementById(liste[num][0]+deb[0]+":00").innerHTML += "<div id='insert'>"+liste[num][1]+"</div>";
+                         deb[0]++;
+                       }
+                   }
+                   else
+                       document.getElementById(liste[num][0]+liste[num][2]).innerHTML += "<div id='insert'>"+liste[num][1]+"</div>";
+            }
+            }
+        }
+
+
+        /* déclaration des variables */
+        var date=new Date();
+        var annee=date.getFullYear(); // annee actuelle
+        var mois=date.getMonth(); // mois actuel
+        var jour=date.getDate(); // jour actuel
+        LesMois=["Janvier","F&eacute;vrier","Mars","Avril","Mai","Juin","Juillet","Ao&ucirc;t","Septembre","Octobre","Novembre","D&eacute;cembre"];
+        LesJours=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+        LesJoursAnnee=["D","L","M","M","J","V","S","D"];
+
+       
+        /*Fonction chargée d'afficher le mois demandé */
+        function Mois()
+        {
+            // Ajout d'un div et d'un tableau */
+            calendrier="<div id='tableMois'><h2><input id='precedent' type='button' value='Ann&eacute;e pr&eacute;c&eacute;dente' onclick='AnneePrecedente ()' />"
+                + "<input id='precedent' type='button' value='Mois Pr&eacute;c&eacute;dent' onclick='MoisPrecedent()' />"  + LesMois[document.Calendrier.Mois.value] + " " + document.Calendrier.Annee.value + "<input id='next' type='button' value='Mois Suivant' onclick='MoisSuivant()'/>"
+                + "<input id='next' type='button' value='Ann&eacute;e suivante' onclick='AnneeSuivante()' /> </h2>";
+ 	        //Affichage des jours dans l'en tete
+            calendrier += "<table border=1 ><thead id='theadMois'><tr>";
+	        for(i=0;i<7;i++)
+	        {   
+		        calendrier+="<th>"+LesJours[i+1]+"</th>";
+        	}
+            calendrier+="</thead>";
+
+	        //Fixe l'année et le mois en fonction de la valeur de la liste deroulante
+	        afficher.setYear(document.Calendrier.Annee.value); // exemple : recupere 2010
+	        afficher.setMonth(document.Calendrier.Mois.value); // exemple : recupere 10
+            
+            
+            afficher.setDate(31); //on place la date au 31
+            if(afficher.getDate()!=31)
+    	        afficher.setDate(31-afficher.getDate()); // pour les mois en 30 jours et fevrier 
+	        afficher.setMonth(document.Calendrier.Mois.value);
+	       
+
+            // Calcul le nb jour dans le mois correspondant
+            nbjours=afficher.getDate();
+            // Calcul du nombre de semaine dans le mois correspondant
+			nbsem=Sem(document.Calendrier.Annee.value,document.Calendrier.Mois.value,nbjours);
+			nbsem-=Sem(document.Calendrier.Annee.value,document.Calendrier.Mois.value,1)-1;
+            
+
+            // j'enleve une semaine si le dernier jour du mois tombe le dimanche de la derniere ligne du tableau
+            boutmois=new Date(document.Calendrier.Annee.value,document.Calendrier.Mois.value,nbjours);
+            if(boutmois.getDay()==0)
+			{
+				nbsem--;
+			}
+            
+            // j'ajoute une semaine de plus si le mois ne tient pas pas dans le tableau
+			boutmois=new Date(document.Calendrier.Annee.value,document.Calendrier.Mois.value,1);
+			if(boutmois.getDay()==0)
+			{
+				nbsem++;
+			}
+			
+            //Boucles pour construire le calendrier            
+            // compteur des numero de jours
+            h=1;
+            
+            // variable laDate pour sert id au td
+            laDate = ""+afficher.getFullYear();
+
+            //variable pour connaitre les jours feries
+            moisFer = afficher.getMonth()+1;
+            for(i=0;i<nbsem;i++)
+			{
+				for(j=1;j<=7;j++,h++)
+				{    
+                    afficher.setDate(h); // je place le jour a 1
+                    if((afficher.getDay()==j || (afficher.getDay()==0 && j==7 )) && afficher.getMonth()==document.Calendrier.Mois.value)
+					{
+						Sem(document.Calendrier.Annee.value,document.Calendrier.Mois.value,h-1);
+                        if (afficher.getDate()<10 )  {
+                            if(moisFer <10 ) {
+                                if(laDate+"0"+moisFer+"0"+afficher.getDate() == laDate+"0101" || laDate+"0"+moisFer+"0"+afficher.getDate() == laDate+"0501"
+                                  || laDate+"0"+moisFer+"0"+afficher.getDate() == laDate+"0508") {
+                                    calendrier+="<td id='_"+ laDate + "0"+moisFer + "0" +afficher.getDate() +"' bgcolor ='#FFD3A8'>";
+                                    calendrier+=afficher.getDate();
+
+                                }
+                                 else if((afficher.getDate() == jour && mois == afficher.getMonth() && afficher.getFullYear() == annee)) { 
+                                        calendrier+="<td id='_"+ laDate + "0"+ moisFer + "0"+afficher.getDate() +"' bgcolor ='red'>";
+                                        calendrier+=afficher.getDate();
+                                 }
+                                 else {
+                                        calendrier+="<td id='_"+ laDate + "0"+moisFer + "0"+afficher.getDate() +"'>";
+                                        calendrier+=afficher.getDate();
+                                 }
+                            
+                           }
+                           else {
+                                if(laDate+moisFer+"0"+afficher.getDate() == laDate+"1101") {
+                                    calendrier+="<td id='_"+ laDate + moisFer + "0"+afficher.getDate() +"' bgcolor ='#FFD3A8'>";
+                                    calendrier+=afficher.getDate();
+                                }
+                                else if((afficher.getDate() == jour && mois == afficher.getMonth() && afficher.getFullYear() == annee)) { 
+                                        calendrier+="<td id='_"+ laDate + moisFer + "0"+afficher.getDate() +"' bgcolor ='red'>";
+                                        calendrier+=afficher.getDate();
+                                    }
+                                else {
+                                        calendrier+="<td id='_"+ laDate + moisFer + "0"+afficher.getDate() +"'>";
+                                        calendrier+=afficher.getDate();
+                                    }
+
+                                }
+                        }
+
+
+
+                         else {
+                            if(moisFer < 10 ) {
+                                if(laDate+"0"+moisFer+afficher.getDate() == laDate+"0714" ||  laDate+"0"+moisFer+afficher.getDate() == laDate+"0815") {
+                                    calendrier+="<td id='_"+ laDate + "0"+moisFer + afficher.getDate() +"' bgcolor='#FFD3A8'>";
+                                    calendrier+= afficher.getDate();
+                                }
+                                else if((afficher.getDate() == jour && mois == afficher.getMonth() && afficher.getFullYear() == annee)) { 
+                                        calendrier+="<td id='_"+ laDate + "0" + moisFer +afficher.getDate() +"' bgcolor ='red'>";
+                                        calendrier+=afficher.getDate();
+                                }
+                                else {
+                                        calendrier+="<td id='_"+ laDate + "0" + moisFer +afficher.getDate() +"'>";
+                                        calendrier+=afficher.getDate();
+                                }
+                            }
+                             else {
+                                 if(laDate+moisFer+afficher.getDate()== laDate+"1225" || laDate+moisFer+afficher.getDate() == laDate+"1111") {
+                                    calendrier+="<td id='_"+ laDate + moisFer + afficher.getDate() +"' bgcolor ='#FFD3A8'>";
+                                    calendrier+=afficher.getDate();
+                                }
+                                else if((afficher.getDate() == jour && mois == afficher.getMonth() && afficher.getFullYear() == annee)) { 
+                                        calendrier+="<td id='_"+ laDate + moisFer +afficher.getDate() +"' bgcolor ='red'>";
+                                        calendrier+=afficher.getDate();
+                                }
+                                else {
+                                        calendrier+="<td id='_"+ laDate + moisFer +afficher.getDate() +"'>";
+                                        calendrier+=afficher.getDate();
+                                }
+
+                            }
+                         }
+                    }
+					else
+					{
+						calendrier+="<td id='noDay'>";
+						h--;
+					}
+                    calendrier+="</td>";
+                    afficher.setDate(afficher.getDate()+1);
+                }
+                calendrier+="</tr>";
+			}
+            calendrier += "</table></div>";
+
+            // Positionne dans le div avec l'ID Cal
+			document.getElementById("Cal").innerHTML=calendrier;
+            event();
+
+            document.getElementById("SelMois").style.visibility="visible";
+            document.getElementById("SelAnnee").style.visibility="visible";
+				
+        }
+
+		/* Fonction chargée d'afficher l'année demandée */ 
+		function Annee()
+		{
+            calendrier="<div id='CalAnnee'><h2> " + 
+                "<input id='precedent' type='button' value='Ann&eacute;e pr&eacute;c&eacute;dente' onclick='AnneePrecedente()' />Ann\351e " 
+                + document.Calendrier.Annee.value + "<input id='next' type='button' value='Ann&eacute;e Suivante' onclick='AnneeSuivante()' /> " + 
+                "</h2><table id='tableAnnee' border=1 >";
+            calendrier += "<thead id='theadAnnee'>";
+            calendrier+="<th>X</th>";
+
+		    // en tete avec les mois 
+            for(i=0;i<12;i++)
+			{
+				calendrier+="<th width='8%'>"+LesMois[i]+"</th>";
+			}
+            calendrier+="</tr></thead>";
+            
+            // recuperation de la valeur de l'annee de la liste deroulante 
+			afficher.setYear(document.Calendrier.Annee.value);
+
+        	laDate = ""+afficher.getFullYear();
+            
+
+           	for(i=0;i<31;i++)
+			{
+
+				afficher.setDate(i+1);
+				calendrier+="<tr>";
+                // 1ere colonne contant les numeros de jour
+				calendrier+="<td width='3%' id='colJour'>"+(i+1)+"</td>";
+				for(j=0;j<12;j++)
+				{
+                    afficher.setMonth(j);
+                    calendrier += "<td ";
+                    if(afficher.getDate() != i+1 ) {
+                        calendrier += "bgcolor='black'>";
+                        afficher.setDate(i+1);
+                    }
+                    else if(j<9) {
+                        if(i<9){
+
+                            // Gerer les jours feries, si c'est egale a un jour ferie alors bgcolor = noir sinon en gris
+                            if(laDate+"0"+(j+1)+"0"+(i+1) == laDate+"0101" || laDate+"0"+(j+1)+"0"+(i+1)==laDate+"0401" ||
+                              laDate+"0"+(j+1)+"0"+(i+1) == laDate+"0501" || laDate+"0"+(j+1)+"0"+(i+1)==laDate+"0508")
+                                    calendrier+="<td id='_" + laDate + "0" + (j+1) + "0" + (i+1) + "' bgcolor='#FFD3A8'>" + LesJoursAnnee[afficher.getDay()];
+                            else
+                                calendrier+="<td id='_" + laDate + "0" + (j+1) + "0" + (i+1) + "' bgcolor='#F8F8F8'>" + LesJoursAnnee[afficher.getDay()];
+                        }
+                        else if ((laDate+"0"+(j+1)+(i+1) == laDate+"0714") || (laDate+"0"+(j+1)+(i+1) == laDate+"0815")
+                                ||(laDate+"0"+(j+1)+(i+1) == laDate+"0520")  )
+                            calendrier+="<td id='_" + laDate + "0" + (j+1) + (i+1) + "' bgcolor='#FFD3A8'>" + LesJoursAnnee[afficher.getDay()];
+                        else
+                            calendrier+="<td id='_" + laDate + "0" + (j+1) + (i+1) + "' bgcolor='#F8F8F8'>" + LesJoursAnnee[afficher.getDay()];
+                    }
+
+                    else {
+                        if(i<10) {
+                            if( laDate+(j+1)+"0"+(i+1) == laDate+"1101" )
+                                calendrier+="<td id='_" + laDate + (j+1) + "0" + (i+1) + "' bgcolor='#FFD3A8'>" + LesJoursAnnee[afficher.getDay()];  
+                            else
+                                calendrier+="<td id='_" + laDate + (j+1) + "0" + (i+1) + "' bgcolor='#F8F8F8'>" + LesJoursAnnee[afficher.getDay()]; 
+                        }
+                        else if ((laDate+(j+1)+(i+1) == laDate+"1111") || (laDate+(j+1)+(i+1) == laDate+"1225"))
+                            calendrier+="<td id='_" + laDate + (j+1) + (i+1) + "' bgcolor='#FFD3A8'>" + LesJoursAnnee[afficher.getDay()];
+                        else
+                            calendrier+="<td id='_" + laDate + (j+1) + (i+1) + "' bgcolor='#F8F8F8'>" + LesJoursAnnee[afficher.getDay()];
+                    }
+                    calendrier+="</td>";
+			}
+			calendrier+="</tr>";
+		}
+            calendrier+="</table></div>";
+		//Affichage du calendrier
+		document.getElementById("Cal").innerHTML=calendrier;
+        event();
+		//Cache la liste de choix du mois mais on garde visible la selection de l'annee
+		document.getElementById("SelMois").style.visibility="hidden";
+	    document.getElementById("SelAnnee").style.visibility="visible";
+     }
+
+
+    /* fonction chargee d'afficher le mode Jour */
+    function Jour () {
+
+        var m = date.getMonth();
+        // variable pour identifier si evenement
+        laDate = ""+date.getFullYear();
+        if(m<10)
+            laDate += "0" + (m+1);
+        else
+            laDate += (m+1);
+        if(date.getDate() < 10 )
+            laDate += "0" +date.getDate();
+        else
+            laDate += date.getDate();
+
+        calendrier="<div id='tableJour'><h2>" + jour + " " + LesMois[mois] + " " + annee + "</h2><table border=1 >";
+
+        for(var i =0; i<24;i++) {
+            if(i <10)
+                calendrier += "<tr><td id='0"+i+":00' width='5px' bgcolor='#50BFD3'>"+"0"+i+":00 </td> " +
+                    " <td id='"+laDate+"0"+i+":00'></td>";
+            else
+                calendrier += "<tr><td id='"+i+":00' width='5px' bgcolor='#50BFD3'>"+i+":00 </td>" +
+                    "<td id='"+ laDate+i+":00'></td>";
+        }
+        calendrier += "</table>";
+
+        // Affichage di calendrier dans le div avec l'ID Cal
+        document.getElementById("Cal").innerHTML = calendrier;
+        event();
+
+        // on cache toutes les listes sauf celle du mode
+        document.getElementById("SelMois").style.visibility="hidden";
+        document.getElementById("SelAnnee").style.visibility="hidden";
+    }
+
+
+	//Fonction chargee de changer de mode (mois ou annee)
+	function Mode()
+	{
+        //recupere la valeur de la liste deroulante
+		mode=document.Calendrier.Modes.value;
+         
+        // creation d'une date au format AAAA-MM-JJ en fonction de la valeur du mois recupere
+        if (mois<10)
+    	    afficher=new Date(annee+"-0"+mois+"-01");
+	    else
+	        afficher=new Date(annee+"-"+mois+"-01");
+		if(mode==1){
+            Mois();
+        }
+		else if (mode==0) {
+            Annee();
+        }
+        else if (mode==2) {
+            Jour ();   
+        }
+        else
+            Semaine ();
+    }
+
+	//Fonction chargee de renvoyer le numero de la semaine de la date passee parametres
+	function Sem(A,M,J)
+	{
+		date.setYear(A);
+		date.setMonth(M);
+		date.setDate(J);
+		date2=new Date(A,0,1);
+		x=1;
+		//Cherche le premier Lundi de l'annee
+		do
+		{
+			date2.setDate(x);
+			x++;
+		}
+		while(date2.getDay()!=1);
+		temps=date.getTime()-date2.getTime()+24*60*60*1000;
+		sem=temps/(1000*60*60*24*7);
+		return Math.ceil(sem);
+	}
+
+	</script>
+	
+	</head>
+
+<body onload="Mode()" > <!-- on lance la fonction mode() pour construire le tableau par defaut lors du lancement de la page -->
+<header>
+CALENDRIER HTML/CSS, JAVASCRIPT, AJAX
+
+</header>
+    <div id="corps">
+        <br/> <form name="Calendrier">
+        
+         <!-- Liste deroulante des modes de vue -->
+             <select name="Modes" tabindex="0" onchange="Mode()">
+            <option value="0">Annuel</option>
+		    <option  value="1">Mensuel</option>
+            <option value="2">Jour </option>
+            <!-- <option value="3"> Semaine </option> -->
+            </select>
+          
+
+        <!-- Liste deroulante des mois -->
+ 
+        <select id="SelMois" name="Mois" tabindex="1" onchange="Mode()" >
+            <script>
+	    	    for(i=0;i<12;i++)
+		        {
+			        document.write("<option ");
+			        if(i==mois)
+                        document.write("selected ");
+			    document.write("value='"+i+"'>"+LesMois[i]+"</option>");
+		    }
+		   </script>
+        </select>	
+
+        <!-- Liste deroulante des annees -->
+            <select id="SelAnnee" name="Annee" tabindex="2" onchange="Mode()">
+		    <script>
+	    	for(i=(annee-50);i<(annee+51);i++)
+		    {
+			    document.write("<option ");
+		    	if(i==annee)
+                    document.write("selected ");
+			    document.write("value='"+i+"'>"+i+"</option>");
+		    }
+		    </script>
+		    </select>
+
+       	 </form>  
+       	 <div id="Cal">
+                 <!--Endroit on je crée le calendrier selon la vue dans les differentes fonctions -->
+             </div>
+	</div>
+
+    <script>
+       </script>
+
+    <footer>
+            
+         <br/>
+         <img src="./image/validHtml.png" alt="HTML Valide" />
+         <img src="./image/css.png" alt="CSS Valide" />
+
+    </footer>
+ </body>
+</html>
+

@@ -1,0 +1,130 @@
+/* HEADER */
+header {
+    background-color : #333333;
+    color : #fff;
+    text-align : center;
+    font : 35px "ExpresswayRegular", Arial;
+
+}
+
+/* FOOTER */
+footer {
+    background-color : #333333;
+}
+
+
+/* Balise table */
+table {
+    font-size:13pt;
+    width:100%;
+    border : solid 1px black;
+}
+
+/* Balise thead, th, tr */
+
+thead {
+    background-color : #50BFD3;
+}
+
+th {
+    text-align : center;
+    vertical-align : middle;
+}
+
+tr {
+	height : 75px;
+	text-align : right;
+	vertical-align : top;
+}
+	
+/* Balise de titre h2 */
+h2 {
+    color : red;
+    font-size : 20pt;
+    background-color : black;
+    text-align : center;
+}
+
+/**************************/
+/* Tableau du Mode Mois ***/
+/**************************/
+
+/* td du tableau Mois avec id= tableMois*/
+#tableMois td {
+    width : 500px;
+}
+
+/* Entete */
+#theadmois {
+    font-size : 25pt;
+}
+
+/* id=noDay si pas de jour */
+#noDay {
+    background-color : #B6B4B4;
+}
+
+
+/**************************/
+/** Tableau du Mode Annee */
+/**************************/
+
+/* td */
+#tableAnnee td {
+    text-align : left;
+}
+
+/* Entete */
+#theadAnnee {
+    font-size : 15pt;
+}
+
+/* Colonne des numeros de jour */
+#colJour {
+    font-size : 25pt;
+    background-color : #50BFD3;
+    vertical-align : middle;
+}
+
+
+/*****************************/
+/**** tabeau du Mode Jour ****/
+/*****************************/
+
+/* Entete */
+#theadJour {
+    font-size : 35pt;
+}
+
+/****************************/
+/** Div id insert Evenement */
+/****************************/
+#insert {
+    background: lightpink;
+    font-size: 15px;
+    height: 40px;
+    margin: 2px;
+    border-radius: 5px;
+    color: white;
+    text-align :center;
+}
+
+
+/*****************************/
+/********** BUTTON ***********/
+/*****************************/
+
+
+#precedent {
+    margin-right : 50px;
+    margin-bottom : 3px;
+    font-size : 12pt;
+    vertical-align : middle;
+}
+
+#next {
+    margin-left : 50px;
+    margin-bottom : 3px;
+    font-size : 12pt;    
+    vertical-align : middle;
+}
