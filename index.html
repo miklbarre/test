@@ -14,18 +14,16 @@
 
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
-	    if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) {
+	    if (xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 0)) {
 		    var listeEvenements = xhr.responseText;
 		    liste=parse(listeEvenements);
             ajouterDansHtml(liste);
-            //  document.getElementById('view').innerHTML=liste;
         }
         };
         xhr.open('GET', 'cal.csv', true);
         xhr.send(null);
         }
 
-        /* fonction qui passe au mois suivant lorsque l'on clique sur le bouton */
       function MoisSuivant() {
             var year  = document.Calendrier.Annee.value;
             var month = document.Calendrier.Mois.value;
@@ -150,7 +148,7 @@
             
             
             afficher.setDate(31); //on place la date au 31
-            if(afficher.getDate()!=31)
+            if(afficher.getDate()!==31)
     	        afficher.setDate(31-afficher.getDate()); // pour les mois en 30 jours et fevrier 
 	        afficher.setMonth(document.Calendrier.Mois.value);
 	       
